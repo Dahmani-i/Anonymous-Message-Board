@@ -13,7 +13,7 @@ exports.createReply = async (req, res) => {
     
     const thread = await Thread.findOne({ _id: thread_id, board });
     if (!thread) {
-      return res.status(404).json({ error: 'Thread not found' });
+      return res.status(400).json({ error: 'Thread not found' });
     }
     
     const reply = new Reply({
@@ -56,7 +56,7 @@ exports.getReplies = async (req, res) => {
     const thread = await Thread.findOne({ _id: thread_id, board });
     
     if (!thread) {
-      return res.status(404).json({ error: 'Thread not found' });
+      return res.status(400).json({ error: 'Thread not found' });
     }
     
     res.json({
@@ -87,16 +87,16 @@ exports.deleteReply = async (req, res) => {
     
     const thread = await Thread.findOne({ _id: thread_id, board });
     if (!thread) {
-      return res.status(404).json({ error: 'Thread not found' });
+      return res.status(400).json({ error: 'Thread not found' });
     }
     
     const reply = await Reply.findOne({ _id: reply_id, thread_id });
     if (!reply) {
-      return res.status(404).json({ error: 'Reply not found' });
+      return res.status(400).json({ error: 'Reply not found' });
     }
     
     if (reply.delete_password !== delete_password) {
-      return res.send('incorrect password');
+      return res.status(400).json({ error: 'incorrect password' });
     }
     
     reply.text = '[deleted]';
@@ -109,7 +109,7 @@ exports.deleteReply = async (req, res) => {
       await thread.save();
     }
     
-    res.send('success');
+    res.json({ message: 'success' });
   } catch (error) {
     console.error('Delete reply error:', error);
     res.status(500).json({ error: 'Server error' });
@@ -127,7 +127,7 @@ exports.reportReply = async (req, res) => {
     
     const thread = await Thread.findOne({ _id: thread_id, board });
     if (!thread) {
-      return res.status(404).json({ error: 'Thread not found' });
+      return res.status(400).json({ error: 'Thread not found' });
     }
     
     const reply = await Reply.findOneAndUpdate(
@@ -137,7 +137,7 @@ exports.reportReply = async (req, res) => {
     );
     
     if (!reply) {
-      return res.status(404).json({ error: 'Reply not found' });
+      return res.status(400).json({ error: 'Reply not found' });
     }
     
     // Update the reply in the thread's embedded array
@@ -147,7 +147,7 @@ exports.reportReply = async (req, res) => {
       await thread.save();
     }
     
-    res.send('reported');
+    res.json({ message: 'success' });
   } catch (error) {
     console.error('Report reply error:', error);
     res.status(500).json({ error: 'Server error' });

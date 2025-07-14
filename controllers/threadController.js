@@ -28,7 +28,7 @@ exports.createThread = async (req, res) => {
   } catch (error) {
     console.error('Create thread error:', error);
     if (error.name === 'MongooseError' || error.name === 'MongoError') {
-      return res.status(500).json({ error: 'Database connection error' });
+      return res.status(400).json({ error: 'Database connection error' });
     }
     res.status(500).json({ error: 'Server error' });
   }
@@ -80,17 +80,17 @@ exports.deleteThread = async (req, res) => {
     
     const thread = await Thread.findOne({ _id: thread_id, board });
     if (!thread) {
-      return res.status(404).json({ error: 'Thread not found' });
+      return res.status(400).json({ error: 'Thread not found' });
     }
     
     if (thread.delete_password !== delete_password) {
-      return res.send('incorrect password');
+      return res.status(400).json({ error: 'incorrect password' });
     }
     
     await Reply.deleteMany({ thread_id });
     await Thread.findByIdAndDelete(thread_id);
     
-    res.send('success');
+    res.json({ message: 'success' });
   } catch (error) {
     console.error('Delete thread error:', error);
     res.status(500).json({ error: 'Server error' });
@@ -113,10 +113,10 @@ exports.reportThread = async (req, res) => {
     );
     
     if (!thread) {
-      return res.status(404).json({ error: 'Thread not found' });
+      return res.status(400).json({ error: 'Thread not found' });
     }
     
-    res.send('reported');
+    res.json({ message: 'success' });
   } catch (error) {
     console.error('Report thread error:', error);
     res.status(500).json({ error: 'Server error' });

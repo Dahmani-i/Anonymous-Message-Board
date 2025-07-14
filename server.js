@@ -30,6 +30,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // Database connection
 const mongoURI = process.env.DB || 'mongodb://localhost:27017/messageboard';
+
+
 mongoose.connect(mongoURI, {
   serverSelectionTimeoutMS: 5000,
   
